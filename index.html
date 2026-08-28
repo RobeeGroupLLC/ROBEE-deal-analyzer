@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102a27">
+  <title>Robee Group Deal Analyzer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" id="homeLink" aria-label="Robee Group dashboard">
+      <span class="mark">R</span><span><strong>ROBEE GROUP</strong><small>Deal Analyzer</small></span>
+    </a>
+    <button class="primary compact" id="addProperty">＋ Add property</button>
+  </header>
+
+  <main>
+    <section id="dashboardView">
+      <div class="hero">
+        <div><p class="eyebrow">ACQUISITIONS DASHBOARD</p><h1>Your deal pipeline</h1><p class="subtle">Analyze opportunities and move the right deals forward.</p></div>
+        <div class="hero-total"><small>Potential fees</small><strong id="feeTotal">$0</strong></div>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="toolbar panel">
+        <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search address or ZIP"></label>
+        <select id="statusFilter" aria-label="Filter by status"><option value="">All statuses</option></select>
+        <select id="typeFilter" aria-label="Filter by type"><option value="">All property types</option><option>Single Family</option><option>Multifamily</option></select>
+      </div>
+      <div class="section-title"><div><h2>Properties</h2><p id="resultCount" class="subtle"></p></div><button class="text-button" id="clearFilters">Clear filters</button></div>
+      <div id="propertyList" class="property-list"></div>
+      <div id="emptyState" class="empty panel" hidden><div class="empty-icon">⌂</div><h2>No properties found</h2><p>Add your first lead or adjust the active filters.</p><button class="primary" id="emptyAdd">Add a property</button></div>
+    </section>
+
+    <section id="editorView" hidden>
+      <button class="back" id="backButton">← Back to pipeline</button>
+      <div class="editor-heading"><div><p class="eyebrow">DEAL WORKSPACE</p><h1 id="editorTitle">New property</h1><p class="subtle">Property details, numbers, and comparable sales.</p></div><button class="danger ghost" id="deleteButton">Delete</button></div>
+      <form id="propertyForm">
+        <div class="editor-grid">
+          <div class="form-stack">
+            <section class="panel form-section"><div class="panel-heading"><span class="step">1</span><div><h2>Property details</h2><p>Location and basic information</p></div></div><div class="fields">
+              <label class="wide">Property address<input name="address" required placeholder="123 Main Street" autocomplete="street-address"></label>
+              <label>City<input name="city" placeholder="Atlanta" autocomplete="address-level2"></label>
+              <label>State<input name="state" maxlength="2" placeholder="GA" autocomplete="address-level1"></label>
+              <label>ZIP code<input name="zip" inputmode="numeric" placeholder="30303" autocomplete="postal-code"></label>
+              <label>Property type<select name="type"><option>Single Family</option><option>Multifamily</option></select></label>
+              <label>Bedrooms<input name="bedrooms" type="number" min="0" step="1" placeholder="3"></label>
+              <label>Bathrooms<input name="bathrooms" type="number" min="0" step="0.5" placeholder="2"></label>
+              <label>Square footage<input name="squareFeet" class="calc-input" type="number" min="0" inputmode="numeric" placeholder="1,850"></label>
+            </div></section>
+            <section class="panel form-section"><div class="panel-heading"><span class="step">2</span><div><h2>Deal inputs</h2><p>Enter assumptions to calculate your offer</p></div></div><div class="fields">
+              <label>Listing price<div class="money"><span>$</span><input name="listPrice" type="number" min="0" inputmode="decimal" placeholder="0"></div></label>
+              <label>ARV<div class="money"><span>$</span><input name="arv" class="calc-input" type="number" min="0" inputmode="decimal" placeholder="0"></div></label>
+              <label>Estimated rehab<div class="money"><span>$</span><input name="rehab" class="calc-input" type="number" min="0" inputmode="decimal" placeholder="0"></div></label>
+              <label>Closing / holding costs<div class="money"><span>$</span><input name="costs" class="calc-input" type="number" min="0" inputmode="decimal" placeholder="0"></div></label>
+              <label>Assignment fee<div class="money"><span>$</span><input name="assignment" class="calc-input" type="number" min="0" inputmode="decimal" value="10000"></div></label>
+              <label>Proposed / current offer<div class="money"><span>$</span><input name="offer" type="number" min="0" inputmode="decimal" placeholder="0"></div></label>
+              <div class="wide margin-field"><span>Buyer target profit margin</span><div class="margin-row"><button type="button" class="margin-chip" data-margin="20">20%</button><button type="button" class="margin-chip active" data-margin="25">25%</button><label><input name="margin" class="calc-input" type="number" min="0" max="100" value="25"><span>%</span></label></div></div>
+              <label>Status<select name="status" id="formStatus"></select></label>
+            </div></section>
+            <section class="panel form-section"><div class="panel-heading"><span class="step">3</span><div><h2>Contact & notes</h2><p>Keep the conversation organized</p></div></div><div class="fields">
+              <label>Agent / realtor name<input name="agentName" placeholder="Agent name"></label><label>Agent phone<input name="agentPhone" type="tel" placeholder="(404) 555-0142"></label><label class="wide">Notes<textarea name="notes" rows="4" placeholder="Seller motivation, access details, follow-up notes…"></textarea></label>
+            </div></section>
+          </div>
+          <aside><section class="calculator"><div class="calc-head"><p class="eyebrow">LIVE ANALYSIS</p><h2>Deal calculator</h2><span>Updates as you type</span></div><div id="calculatorRows"></div><div class="calc-disclaimer">Screening estimate only. Verify all figures during due diligence.</div></section></aside>
+        </div>
+        <section class="panel comps-section"><div class="comps-head"><div><p class="eyebrow">MARKET VALIDATION</p><h2>Comparable sales</h2><p class="subtle">Use nearby sales to support your ARV.</p></div><button type="button" class="secondary" id="addComp">＋ Add comparable</button></div><div id="compEstimate" class="comp-estimate" hidden></div><div id="compsList"></div><div id="noComps" class="no-comps"><strong>No comparables yet</strong><span>Add recent nearby sales to calculate a suggested ARV.</span></div></section>
+        <div class="form-actions"><button type="button" class="secondary" id="cancelButton">Cancel</button><button type="submit" class="primary">Save property</button></div>
+      </form>
+    </section>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="calculations.js"></script><script src="app.js"></script>
+</body>
+</html>
